@@ -78,16 +78,14 @@ public class Cutter {
         }
         return newText;
     }
-    public void deleteLastLine(String outputName) {
 
-    }
     public static void cut(String inputName, String outputName, String range, boolean cKey, boolean wKey) throws IOException {
         if (inputName == null) {
             List<String> listOfString = new ArrayList<>();
             Scanner in = new Scanner(System.in);
             System.out.println("Write text to cut");
             while (in.hasNext()) listOfString.add(in.nextLine());
-            List<String> newText = cutText(listOfString, range, wKey, cKey);
+            List<String> newText = cutText(listOfString, range, cKey, wKey);
 
             if (outputName != null) {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(outputName));
@@ -111,6 +109,9 @@ public class Cutter {
                 writer.close();
             } else for (String line : newText) System.out.println(line);
         }
+    }
+    public static void main(String[] arguments) throws IOException {
+        cut (null, null, "3-", false, true);
     }
 }
 

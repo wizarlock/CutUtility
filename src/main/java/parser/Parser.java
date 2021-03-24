@@ -7,9 +7,9 @@ import org.kohsuke.args4j.Option;
 import java.io.IOException;
 
 public class Parser {
-    @Option(name = "-c", usage = "Indentation in characters")
+    @Option(name = "-c", usage = "Indentation in characters", forbids = "-w")
     public boolean cKey = false;
-    @Option(name = "-w", usage = "Indentation in words")
+    @Option(name = "-w", usage = "Indentation in words", forbids = "-c")
     public boolean wKey = false;
     @Option(name = "-o", usage = "Output File")
     public String outputFile;
@@ -38,7 +38,7 @@ public class Parser {
             return;
         }
         try {
-            Cutter.cut(inputFile, outputFile, range, wKey, cKey);
+            Cutter.cut(inputFile, outputFile, range, cKey, wKey);
         } catch (IOException e) {
             e.printStackTrace();
         }
