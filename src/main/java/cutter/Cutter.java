@@ -56,9 +56,9 @@ public class Cutter {
         }
         if (outputFile != null) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile))) {
-                for (String line : newText) {
-                    writer.write(line);
-                    writer.newLine();
+                for (int i = 0; i <= newText.size() - 1; i++) {
+                    writer.write(newText.get(i));
+                    if (i != newText.size() - 1) writer.newLine();
                 }
             }
         } else for (String line : newText) System.out.println(line);

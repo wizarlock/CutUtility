@@ -22,7 +22,7 @@ public class Parser {
 
 
     public static void main(String[] arguments) throws IOException {
-        new parser.Parser().parseArguments(arguments);
+        new Parser().parseArguments(arguments);
     }
 
     public void parseArguments(String[] arguments) throws IOException {
@@ -30,10 +30,10 @@ public class Parser {
         try {
             parser.parseArgument(arguments);
             if ((range.isEmpty()) || (!wKey && !cKey) || !range.matches("\\d*-\\d*") || range.length() == 1)
-                throw new CmdLineException("The entered data is not satisfactory");
-        } catch (CmdLineException e) {
+                throw new IllegalArgumentException("The entered data is not satisfactory");
+        } catch (IllegalArgumentException | CmdLineException e) {
             System.err.println(e.getMessage());
-            System.err.println("java -jar cut.jar cut [-c|-w] [-o ofile] [file] [-r range]");
+            System.err.println("java -jar cut.jar [-c|-w] [-o ofile] [file] [-r range]");
             parser.printUsage(System.err);
             return;
         }

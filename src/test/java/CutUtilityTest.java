@@ -1,17 +1,18 @@
 import cutter.Cutter;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import parser.Parser;
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.*;
 import java.nio.file.spi.FileSystemProvider;
 import java.util.*;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class CutUtilityTest {
+public class CutUtilityTest {
     private boolean assertFileContent(File actual, File expected) throws IOException {
         List<String> expectedLines = Files.readAllLines(expected.toPath());
         List<String> actualLines = Files.readAllLines(actual.toPath());
@@ -23,7 +24,7 @@ class CutUtilityTest {
     }
 
     @Test
-    void cut() throws IOException, URISyntaxException {
+    public void cut() throws IOException, URISyntaxException {
         new Cutter().cut(getFile("input.txt"), getFile("output.txt"), "0-2", false, true);
         assertTrue(
                 assertFileContent(getFile("output.txt"), getFile("expected.txt"))
@@ -78,7 +79,7 @@ class CutUtilityTest {
         );
     }
     @Test
-    void cutUtility() throws IOException, URISyntaxException {
+    public void cutUtility() throws IOException, URISyntaxException {
         Parser.main(("-w -o " + getFile("output.txt").getAbsolutePath() + " " + getFile("input.txt").getAbsolutePath() +" -r 0-2").split(" "));
         assertTrue(
                 assertFileContent(getFile("output.txt"), getFile("expected.txt"))
@@ -135,6 +136,12 @@ class CutUtilityTest {
         assertTrue(
                 assertFileContent(getFile("output.txt"), getFile("expected5.txt"))
         );
+        String newLine = System.getProperty("line.separator");
+        InputStream oldIn = System.in;
+        System.setIn(new BufferedInputStream(new FileInputStream("src/test/resources/input.txt")));
+        assertEquals("Write text to cut" + newLine + "Дончич родился в" + newLine + "Ламело был выбран" + newLine,
+                main(("-w -r -2").split(" ")));
+        System.setIn(oldIn);
     }
 
     private File getFile(String filename) throws URISyntaxException, IOException {
@@ -153,6 +160,23 @@ class CutUtilityTest {
         }
         Path source = Paths.get(uri);
         return source.toFile();
+    }
+
+    private String main(String[] args) throws IOException {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream oldOut = System.out;
+        PrintStream oldErr = System.err;
+        System.setOut(new PrintStream(baos));
+        System.setErr(new PrintStream(baos));
+
+        Parser.main(args);
+
+        System.out.flush();
+        System.err.flush();
+        System.setOut(oldOut);
+        System.setErr(oldErr);
+        return (baos.toString());
     }
 }
 
