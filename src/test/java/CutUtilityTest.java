@@ -1,12 +1,10 @@
 import cutter.Cutter;
-import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import parser.Parser;
 import java.io.*;
-import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.*;
-import java.nio.file.spi.FileSystemProvider;
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -76,13 +74,6 @@ public class CutUtilityTest {
         assertTrue(
                 assertFileContent(getFile("output.txt"), getFile("expected5.txt"))
         );
-        new Cutter().cut(stream2file(getClass().getClassLoader().getResourceAsStream("input.txt")),
-                stream2file(getClass().getClassLoader().getResourceAsStream("output.txt")), "0-2", false, true);
-
-        /* assertTrue(
-               * assertFileContent(stream2file(getClass().getClassLoader().getResourceAsStream("output.txt")),
-               *         stream2file(getClass().getClassLoader().getResourceAsStream("expected.txt")))
-        ); данный тест не проходит */
     }
     @Test
     public void cutUtility() throws IOException, URISyntaxException {
@@ -150,25 +141,18 @@ public class CutUtilityTest {
         System.setIn(oldIn);
     }
 
-    private File getFile(String filename) throws URISyntaxException, IOException {
-        URI uri = getClass().getResource(filename).toURI();
+    private File getFile(String fileName) throws URISyntaxException {
 
-        if ("jar".equals(uri.getScheme())) {
-            for (FileSystemProvider provider : FileSystemProvider.installedProviders()) {
-                if (provider.getScheme().equalsIgnoreCase("jar")) {
-                    try {
-                        provider.getFileSystem(uri);
-                    } catch (FileSystemNotFoundException e) {
-                        provider.newFileSystem(uri, Collections.emptyMap());
-                    }
-                }
-            }
+        ClassLoader classLoader = getClass().getClassLoader();
+        URL resource = classLoader.getResource(fileName);
+        if (resource == null) {
+            throw new IllegalArgumentException("file not found! " + fileName);
+        } else {
+            return new File(resource.toURI());
         }
-        Path source = Paths.get(uri);
-        return source.toFile();
     }
 
-    private String main(String[] args) throws IOException {
+    private String main (String[] args) throws IOException {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PrintStream oldOut = System.out;
@@ -183,16 +167,5 @@ public class CutUtilityTest {
         System.setOut(oldOut);
         System.setErr(oldErr);
         return (baos.toString());
-    }
-    public static final String PREFIX = "stream2file";
-    public static final String SUFFIX = ".tmp";
-
-    public static File stream2file (InputStream in) throws IOException {
-        final File tempFile = File.createTempFile(PREFIX, SUFFIX);
-        tempFile.deleteOnExit();
-        try (FileOutputStream out = new FileOutputStream(tempFile)) {
-            IOUtils.copy(in, out);
-        }
-        return tempFile;
     }
 }

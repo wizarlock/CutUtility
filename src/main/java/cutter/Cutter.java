@@ -19,7 +19,6 @@ public class Cutter {
             this.endRange = Integer.parseInt(values[1]);
         }
     }
-
     private String cutLine(String line, String range, boolean cKey, boolean wKey) {
         parseRange(range);
         StringBuilder newLine = new StringBuilder();
